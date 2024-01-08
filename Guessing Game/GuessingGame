@@ -1,0 +1,70 @@
+.ORIG x3000 ;Start of file
+;Program Starts here
+LD R2, B; Load R2 with 9
+AND R3, R3, 0; Clear R3 since this will be our guess counter
+LEA R0, NewLine; Go to next line
+PUTS; Print white space
+Loop LEA R0, Question; Asks for a number between 0 and 9
+PUTS; Prints message
+GETC; Prompt user for number guess
+ADD R1, R0, 0; Copy R0 (guess) into R1
+LEA R0, NewLine; Go to next line
+PUTS; Print white space
+LD R4, C; Load x-30 into R4
+ADD R1, R1, R4; Checking if the number is less than 0 (under range)
+BRn Err1; Check if R0 is negative (under range), if so go to Err1
+LD R4, D; Load x-9 into R4
+ADD R1, R1, R4; Check if the number is more than 9 (over range)
+BRp Err1; Check if R0 is positive (over range), if so go to Err1
+LD R4, E; Load x3 into R4
+ADD R1, R1, R4; Check for 6 (key)
+BRz Correct; If R0 is 0, then they guessed correct so game ends
+BRn Tiny; If R0 is negative, then that means the number is too small
+LEA R0, Big; Load "too big message", since number is neither negative or zero
+PUTS; Prints "too big" message
+LEA R0, NewLine; Go to next line
+PUTS; Print white space
+BRnzp Inc; Go to increase guess counter, and subtract loop counter by 1
+Tiny LEA R0, Small; Load "too small" message
+PUTS; Prints message
+LEA R0, NewLine; Go to next line
+PUTS; Print white space
+BRnzp Inc; Go to increase guess counter, and subtract loop counter by 1
+Err1 LEA R0, Error1; Load Error1 message into R0
+PUTS; Prints message
+LEA R0, NewLine; Go to next line
+PUTS; Print white space
+Inc ADD R3, R3, 1; Increase guess counter
+ADD R2, R2, -1; Subtract counter by 1
+BRz Lost; Check if counter is 0, if so game over
+BRnzp Loop; Go back for another number input
+Correct LEA R0, Congrats; Load Congratulation message
+PUTS; Prints message
+ADD R3, R3, 1; Increment guess counter
+ADD R0, R3, 0; Copy R3 into R0
+LD R4, F; Load 48 into R4 for ASCII conversion
+ADD R0, R0, R4; Convert to ASCII
+OUT; Print R3 (number of guesses)
+LEA R0, Guesses; Finalize message
+PUTS
+BRnzp GG; Game Over
+Lost LEA R0, Lose; Losing message
+PUTS; Prints message
+BRnzp GG; Game over
+GG HALT; Program ends
+;Data Section
+Lose .STRINGZ "Game Over. Correct Answer is 6"
+NewLine .STRINGZ "\n"
+Big .STRINGZ "Too big"
+Small .STRINGZ "Too small"
+Congrats .STRINGZ "Correct! You took "
+Guesses .STRINGZ " guesses"
+Question .STRINGZ "Guess a number between 0 and 9: "
+Error1 .STRINGZ "Invalid Input"
+A .FILL x36
+B .FILL 9
+C .FILL x-30
+D .FILL x-9
+E .FILL x3
+F .FILL 48
+.END; End of file
